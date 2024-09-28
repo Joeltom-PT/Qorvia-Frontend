@@ -9,6 +9,7 @@ import { AppDispatch } from '../../redux/store';
 import { OrganizerRegister as OrganizerRegisterAction } from '../../redux/action/organizerActions'; 
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 interface FormData {
   organizationName: string;
@@ -115,7 +116,7 @@ const OrganizerRegister: React.FC = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-green-600 mb-4">Registration Successful!</h1>
           <p className="text-blue-800 mb-4">Your registration request is pending. When approved, a notification will be sent to your email.</p>
-          <p className="text-blue-800">Already have an account? <a href="/login" className="underline">Login here</a></p>
+          <p className="text-blue-800">Click here to login : <Link to='/login-organizer' className="underline">Login here</Link></p>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -200,6 +201,9 @@ const OrganizerRegister: React.FC = () => {
           >
             {loading ? 'Loading...' : 'Register'}
           </button>
+          <div className='p-2 mt-4 flex justify-center items-center'>
+          <p className="text-blue-800">If you don't have an account,{' '} <Link to='/login-organizer' className="underline">Login here</Link></p>
+          </div>
         </form>
       )}
     </div>

@@ -11,7 +11,9 @@ export interface IOrganizerState {
     name: string;
     email: string;
     verificationStatus: string;
+    registerRequestStatus: string;
     status: string;
+    role: string;
   }
 
   export interface IOrganizerRegisterRequest {
@@ -39,4 +41,15 @@ export interface IOrganizerState {
   export interface IOrganizerRegisterResponse {
     statusCode: number;
     message: string;
+  }
+
+  export interface IOrganizerLoginRequest {
+    email: string;
+    password: string;
+  }
+
+  export interface IOrganizerLoginResponse {
+    statusCode: number;
+    message: string;
+    data: IOrganizerProfile;
   }

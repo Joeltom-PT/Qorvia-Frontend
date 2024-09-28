@@ -42,6 +42,7 @@ export const loginUser = createAsyncThunk<IloginUserResponse, ILoginRequest>(
             return response.data;
         } catch (error) {
             if (error instanceof AxiosError) {
+                
                 return rejectWithValue(error.request?.data || 'Login Error');
             }
             return rejectWithValue('An unknown error occurred');

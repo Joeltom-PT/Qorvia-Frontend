@@ -1,18 +1,22 @@
-import { IOrganizerEndPoints, IUserEndPoints } from "./IEndPoints";
+import { IAdminEndPoints, IOrganizerEndPoints, IUserEndPoints } from "./IEndPoints";
 
 export const userEndPoints: IUserEndPoints = {
-    signup: '/account/auth/user/register',
-    verifyOTP: '/account/auth/user/verifyEmail',
+    signup: '/account/auth/register',
+    verifyOTP: '/account/auth/verifyEmail',
     resendOTP: '/notification/resendOtp',
-    login: '/account/auth/user/login',
-    logout: '/account/auth/user/logout',
+    login: '/account/auth/login',
+    logout: '/account/auth/logout',
     getUserData: '/account/user/getUserData'
 };
 
 
 export const organizerEndPoints: IOrganizerEndPoints = {
-    register: '/account/organizer/register',
-    login: '/account/organizer/login',
-    logout: '/account/auth/user/logout',
+    register: '/account/auth/organizerRegister',
+    login: '/account/auth/organizerLogin',
+    logout: '/account/auth/logout',
 };
 
+
+export const adminEndPoints: IAdminEndPoints = {
+    getAllUsers: '/account/admin/getAllUsers'
+}

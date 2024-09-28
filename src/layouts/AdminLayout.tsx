@@ -1,0 +1,110 @@
+import { useState, ReactNode } from 'react';
+import { Home, Users, Calendar, FileText, DollarSign, HelpCircle, Menu, X, UserCircle, LogOut } from 'lucide-react';
+import { Link, Outlet } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { logoutOrganizer } from '../redux/action/organizerActions';
+
+interface AdminLayoutProps {
+  children?: ReactNode;
+}
+
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const handleLogout = () => {
+    setIsModalOpen(true); 
+  };
+
+  const confirmLogout = () => {
+    dispatch(logoutOrganizer());
+    setIsModalOpen(false); 
+  };
+
+  const cancelLogout = () => {
+    setIsModalOpen(false); 
+  };
+
+
+  return (
+    <div className="flex h-screen bg-gray-100">
+      <div className={`${sidebarOpen ? 'w-64' : 'w-20'} flex flex-col bg-indigo-900 text-white transition-all duration-300 ease-in-out`}>
+        <div className="flex items-center justify-between p-4">
+          <h1 className={`${sidebarOpen ? 'block' : 'hidden'} text-2xl font-bold`}>QORVIA</h1>
+          <button onClick={toggleSidebar} className="text-white focus:outline-none">
+            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+        <nav className="flex-1">
+          <SidebarItem icon={<Home size={20} />} text="Home" expanded={sidebarOpen} />
+          <SidebarItem icon={<Users size={20} />} text="Organizers" expanded={sidebarOpen} />
+          <SidebarItem icon={<Calendar size={20} />} text="Events" expanded={sidebarOpen} />
+          <SidebarItem icon={<Users size={20} />} text="Users" expanded={sidebarOpen} />
+          <SidebarItem icon={<FileText size={20} />} text="Reports" expanded={sidebarOpen} />
+          <SidebarItem icon={<DollarSign size={20} />} text="Payout Management" expanded={sidebarOpen} />
+        </nav>
+        <div className="mt-auto border-t border-indigo-800">
+          <SidebarItem icon={<HelpCircle size={20} />} text="Help" expanded={sidebarOpen} />
+          <SidebarItem icon={<UserCircle size={20} />} text="Profile" expanded={sidebarOpen} />
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-2 text-gray-300 hover:bg-indigo-800 focus:outline-none"
+          >
+            <LogOut size={20} />
+            {sidebarOpen && <span className="ml-3">Log Out</span>}
+          </button>
+        </div>
+      </div>
+
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+       
+        <header className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          </div>
+        </header>
+
+      
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            {children || <Outlet />}
+          </div>
+        </main>
+      </div>
+      {isModalOpen && (
+        <>
+          <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={cancelLogout}></div>
+          <dialog open className="modal modal-open z-50">
+            <div className="modal-box bg-blue-white text-black">
+              <h3 className="font-bold text-lg">Logout Confirmation</h3>
+              <p className="py-4">Are you sure you want to log out?</p>
+              <div className="modal-action">
+                <button onClick={cancelLogout} className="bg-blue-900 p-2 text-white rounded flex items-center justify-center space-x-2">Cancel</button>
+                <button onClick={confirmLogout} className="bg-red-600 p-2 text-white rounded flex items-center justify-center space-x-2">Confirm</button>
+              </div>
+            </div>
+          </dialog>
+        </>
+      )}
+    </div>
+  );
+};
+
+interface SidebarItemProps {
+  icon: ReactNode;
+  text: string;
+  expanded: boolean;
+}
+
+const SidebarItem: React.FC<SidebarItemProps> = ({ icon, text, expanded }) => (
+  <Link to='/admin/user-management' className="flex items-center px-4 py-2 text-gray-300 hover:bg-indigo-800">
+    {icon}
+    {expanded && <span className="ml-3">{text}</span>}
+  </Link>
+);
+
+export default AdminLayout;

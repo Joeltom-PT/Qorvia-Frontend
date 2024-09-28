@@ -16,3 +16,7 @@ export interface IUserEndPoints extends IEndPoints {
 export interface IOrganizerEndPoints extends IEndPoints {
     register: string;
 }
+
+export interface IAdminEndPoints {
+    getAllUsers: string;
+}

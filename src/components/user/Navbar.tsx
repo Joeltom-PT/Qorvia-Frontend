@@ -43,8 +43,8 @@ const Navbar: React.FC<NavbarProps> = () => {
       >
         <img
           src={isFloating ? '/secondary_logo.svg' : '/primary_logo.svg'}
-          alt="Logo" className="max-w-[50%] md:max-w-[25%]"
-          onClick={() => navigate('/')}
+          alt="Logo" className="max-w-[50%] md:max-w-[25%] cursor-pointer"
+          onClick={() => navigate('/')} 
         />
         <div className="flex items-center space-x-4">
           <button onClick={handleProfile} className='w-[45px] h-[45px] rounded-full border-2 border-blue-900'>
