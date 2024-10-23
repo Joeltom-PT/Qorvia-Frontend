@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      port: 9000 
+      port: 9000,
     },
     plugins: [react()],
     resolve: {
@@ -16,7 +16,8 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      'process.env': { ...process.env, ...env }
-    }
+      'process.env': { ...process.env, ...env },
+      global: {},
+    },
   };
 });

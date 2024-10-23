@@ -1,4 +1,4 @@
-import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react';
+import React, { useRef, useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import { toast } from 'react-toastify';
@@ -9,33 +9,48 @@ interface CloudinaryUploadProps {
   fixedSize?: { width: number; height: number };
   onUploadSuccess?: (url: string) => void;
   uploadMessage?: string;
+  uploadedImageUrl?: string; // existing uploaded image URL
 }
 
 const CloudinaryUpload = forwardRef((props: CloudinaryUploadProps, ref) => {
-  const { fixedSize, onUploadSuccess, uploadMessage = "Upload Image" } = props;
+  const { fixedSize, onUploadSuccess, uploadMessage = "Upload Image", uploadedImageUrl } = props;
   const cropperRef = useRef<HTMLImageElement>(null);
   const [image, setImage] = useState<string | ArrayBuffer | null>(null);
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(uploadedImageUrl || null); // initialize with uploadedImageUrl
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [imageLoading, setImageLoading] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   useImperativeHandle(ref, () => ({
     getCroppedImage: () => uploadedUrl,
   }));
 
+  useEffect(() => {
+    if (uploadedImageUrl) {
+      setUploadedUrl(uploadedImageUrl); // if there's a previously uploaded image, set it as the preview
+    }
+  }, [uploadedImageUrl]);
+
   const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
+      const file = files[0];
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload a valid image file.');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
         setImage(reader.result);
         setErrorMessage(null);
-        console.log('Image selected, opening modal...');
-        document.getElementById('my_modal_1')?.showModal();
+        setModalOpen(true); // Open modal to crop image
       };
-      reader.readAsDataURL(files[0]);
+      reader.readAsDataURL(file);
 
       if (isUpdating) {
         setUploadedUrl(null);
@@ -74,8 +89,6 @@ const CloudinaryUpload = forwardRef((props: CloudinaryUploadProps, ref) => {
           toast.success('Image uploaded successfully!');
           if (onUploadSuccess) onUploadSuccess(data.secure_url);
           closeModal();
-
-          setIsUpdating(false);
         }
       })
       .catch(err => {
@@ -101,87 +114,75 @@ const CloudinaryUpload = forwardRef((props: CloudinaryUploadProps, ref) => {
 
   const closeModal = () => {
     setImage(null);
-    setIsUpdating(false); 
-    const modal = document.getElementById('my_modal_1') as HTMLDialogElement;
-    modal.close();
-  };
-
-  const handleImageLoad = () => {
-    setImageLoading(false);
-  };
-
-  const handleImageLoadingStart = () => {
-    setImageLoading(true);
-  };
-
-  const handleImageClick = () => {
-    console.log('working')
-    setIsUpdating(true);
-    document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
+    setIsUpdating(false);
+    setModalOpen(false); 
   };
 
   return (
     <div className="flex justify-center items-center w-full h-full">
       {uploadedUrl ? (
-  <div className="w-full h-full flex justify-center items-center">
-    <label className="cursor-pointer w-full h-full">
-      <div className="flex flex-col items-center justify-center border-2 border-dashed border-blue-300 rounded-lg w-full h-full">
-        <img
-          src={uploadedUrl}
-          alt="Uploaded"
-          className="max-w-full max-h-full rounded-sm shadow-md object-contain cursor-pointer"
-          onLoad={handleImageLoad}
-          onError={handleImageLoadingStart}
-          onClick={handleImageClick}
-        />
-        <input type="file" accept="image/*" onChange={onImageChange} className="hidden" />
-      </div>
-    </label>
-  </div>
-) : (
-  <div className="w-full h-full flex justify-center items-center">
-    <label className="cursor-pointer w-full h-full">
-      <div className="flex flex-col items-center justify-center border-2 border-dashed border-blue-300 rounded-lg w-full h-full py-5">
-        <span className="text-4xl">+</span>
-        <span className='text-md'>{uploadMessage}</span>
-        <input type="file" accept="image/*" onChange={onImageChange} className="hidden" />
-      </div>
-    </label>
-  </div>
-)}
-
-
-   
-      <dialog id="my_modal_1" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Crop Your Image</h3>
-          {loading ? (
-            <div className="flex justify-center items-center w-full h-96">
-              <MoonLoader size={50} color={"#123abc"} loading={loading} />
+        <div className="w-full h-full flex justify-center items-center">
+          <label className="cursor-pointer w-full h-full">
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-blue-300 rounded-lg w-full h-full">
+              <img
+                src={uploadedUrl}
+                alt="Uploaded"
+                className="max-w-full max-h-full rounded-sm shadow-md object-contain cursor-pointer"
+                onLoad={() => setImageLoading(false)}
+                onError={() => setImageLoading(true)}
+                onClick={() => {
+                  setIsUpdating(true);
+                  document.querySelector<HTMLInputElement>('input[type="file"]')?.click();
+                }}
+              />
+              <input type="file" accept="image/*" onChange={onImageChange} className="hidden" />
             </div>
-          ) : (
-            <>
-              {image && (
-                <Cropper
-                  src={image as string}
-                  style={{ height: '100%', width: '100%' }}
-                  initialAspectRatio={fixedSize ? fixedSize.width / fixedSize.height : undefined}
-                  guides={false}
-                  ref={cropperRef}
-                  aspectRatio={fixedSize ? fixedSize.width / fixedSize.height : NaN}
-                />
-              )}
-              {errorMessage && (
-                <div className="text-red-500 mt-2">{errorMessage}</div>
-              )}
-              <div className="modal-action">
-                <button onClick={getCroppedImage} className="btn">Save Cropped Image</button>
-                <button onClick={closeModal} className="btn">Close</button>
-              </div>
-            </>
-          )}
+          </label>
         </div>
-      </dialog>
+      ) : (
+        <div className="w-full h-full flex justify-center items-center">
+          <label className="cursor-pointer w-full h-full">
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-blue-300 rounded-lg w-full h-full py-5">
+              <span className="text-4xl">+</span>
+              <span className='text-md'>{uploadMessage}</span>
+              <input type="file" accept="image/*" onChange={onImageChange} className="hidden" />
+            </div>
+          </label>
+        </div>
+      )}
+
+      {modalOpen && (
+        <dialog open className="modal">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Crop Your Image</h3>
+            {loading ? (
+              <div className="flex justify-center items-center w-full h-96">
+                <MoonLoader size={50} color={"#123abc"} loading={loading} />
+              </div>
+            ) : (
+              <>
+                {image && (
+                  <Cropper
+                    src={image as string}
+                    style={{ height: '100%', width: '100%' }}
+                    initialAspectRatio={fixedSize ? fixedSize.width / fixedSize.height : undefined}
+                    guides={false}
+                    ref={cropperRef}
+                    aspectRatio={fixedSize ? fixedSize.width / fixedSize.height : NaN}
+                  />
+                )}
+                {errorMessage && (
+                  <div className="text-red-500 mt-2">{errorMessage}</div>
+                )}
+                <div className="modal-action">
+                  <button onClick={getCroppedImage} className="btn">Save Cropped Image</button>
+                  <button onClick={closeModal} className="btn">Close</button>
+                </div>
+              </>
+            )}
+          </div>
+        </dialog>
+      )}
     </div>
   );
 });

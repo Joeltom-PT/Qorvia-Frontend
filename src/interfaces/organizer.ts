@@ -53,3 +53,24 @@ export interface IOrganizerState {
     message: string;
     data: IOrganizerProfile;
   }
+
+  export interface IEmailVerificationRequest {
+    email: string;
+  }
+
+  export interface IVerifyOrganzierRequest {
+    token: string;
+  }
+
+  export interface IOrganizerVerificationResponse {
+    statusCode: number;
+    message: string;
+    data: {
+        email: string; 
+    } | null;
+  }
+
+  export interface IEventCategoryReqeust {
+    name: string;
+    description: string;
+  }

@@ -1,6 +1,7 @@
-import React from 'react';
+
 
 const AdminDashboard: React.FC = () => {
+
   return (
     <div>
       <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">

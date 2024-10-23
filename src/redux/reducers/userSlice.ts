@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IUserState } from "../../interfaces/user";
-import { fetchUserData, loginUser, logoutUser, otpVerify, resendOtp, signUp } from "../action/userActions";
+import { changeAboutInformation, fetchUserData, loginUser, logoutUser, otpVerify, resendOtp, signUp } from "../action/userActions";
 
 const initialState: IUserState = {
     loading: false,
@@ -88,7 +88,24 @@ export const userSlice = createSlice({
             })
             .addCase(logoutUser.rejected, (state) => {
                 state.loading = false;
-            });
+            })
+            // Update user profile
+            .addCase(changeAboutInformation.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(changeAboutInformation.fulfilled, (state, action) => {
+                if (state.user) { 
+                    state.user.pro_img = action.payload.profile_img;
+                    state.user.about = action.payload.about;
+                    state.user.address = action.payload.address;
+                    state.user.username = action.payload.username;
+                }
+                state.loading = false; 
+            })
+            .addCase(changeAboutInformation.rejected, (state) => {
+                state.loading = false;
+            })
+            ;
     },
 });
 

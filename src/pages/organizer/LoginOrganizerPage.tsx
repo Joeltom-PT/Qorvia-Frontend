@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { IOrganizerLoginRequest } from '../../interfaces/organizer';
 import { organizerLogin } from '../../redux/action/organizerActions';
-import { toast } from 'react-toastify';
+import ForgotPasswordModal from '../../components/organizer/ForgotPasswordModal';
 
 type Errors = {
   email?: string;
@@ -60,6 +60,7 @@ const LoginOrganizerPage: React.FC = () => {
     }
   };
 
+
   useEffect(() => {
     if (isLogged) {
       if (profile?.role === 'ORGANIZER') {
@@ -107,6 +108,9 @@ const LoginOrganizerPage: React.FC = () => {
             />
             {errors.password && <p className="mt-1 text-red-500 text-sm">{errors.password}</p>}
           </div>
+        {/* <p onClick={handleForgotPassword} className="mt-4 text-blue-900 text-sm cursor-pointer hover:underline">
+           forgot password
+        </p> */}
           <button
             type="submit"
             className="w-full bg-blue-900 text-white hover:bg-blue-800 transition-colors duration-300 py-2 rounded-md font-semibold"
@@ -115,12 +119,15 @@ const LoginOrganizerPage: React.FC = () => {
             {loading ? 'Logging in...' : 'Log In'}
           </button>
         </form>
+        <ForgotPasswordModal />
         <p className="mt-4 text-center text-gray-600">
           Don't have an account?{' '}
           <Link to="/register-organizer" className="text-blue-900 hover:underline">
             Register here
           </Link>
         </p>
+        <div>
+       </div>
       </div>
     </div>
   );

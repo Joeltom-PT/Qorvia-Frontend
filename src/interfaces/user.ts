@@ -55,6 +55,7 @@ export interface IloginUserResponse {
   role: string;
   verificationStatus: string;
   status: string;
+  isGoogleAuth: boolean;
 }
 
 export interface IUser {
@@ -64,6 +65,9 @@ export interface IUser {
    verificationStatus: string;
    status: string;
    pro_img?: string | null;
+   isGoogleAuth: boolean;
+   about?: string | null;
+   address?: string | null;
 }
 
 export interface IUserState {
@@ -76,4 +80,28 @@ export interface IUserState {
 
 export interface userDataRequest {
   email: string;
+}
+
+export interface IPasswordChangeRequest {
+  email: string;
+  currentPass: string;
+  newPass: string;
+}
+
+export interface IUserProfileUpdateRequest {
+ email: string;
+ username: string;
+ about: string | null;
+ address: string | null;
+ profile_img: string | null;
+}
+
+export interface IForgotPasswordRequest {
+  email: string;
+}
+
+export interface IForgotPasswordResetRequest {
+  email: string;
+  otp: string;
+  password: string;
 }

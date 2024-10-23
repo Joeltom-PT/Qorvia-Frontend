@@ -7,7 +7,6 @@ import ExploreEvents from "./pages/user/ExploreEvents";
 import UserLayout from "./layouts/UserLayout";
 import OtpVerification from "./pages/global/OtpVerification.tsx";
 import { ToastContainer } from "react-toastify";
-import Profile from "./pages/user/Profile.tsx";
 import { useSelector } from "react-redux";
 import { IUserState } from "./interfaces/user.ts";
 import { RootState } from "./redux/store.ts";
@@ -29,7 +28,20 @@ import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
 import AdminProtectedRoute from "./security/AdminProtectedRoutes.tsx";
 import AdminLayout from "./layouts/AdminLayout.tsx";
 import AdminUserManagement from "./pages/admin/AdminUserManagement.tsx";
-// import OrganizerStatusChecker from "./security/components/OrganizerStatusChecker.tsx";
+import VerifyOrganizer from "./pages/organizer/VerifyOrganizer.tsx";
+import AdminOrganizerManagement from "./pages/admin/AdminOrganizerManagement.tsx";
+import AdminOrganizerDetailsPage from "./pages/admin/AdminOrganizerDetailsPage.tsx";
+import CreateOnlineEvent from "./pages/organizer/dashboard/event/CreateOnlineEvent.tsx";
+import CreateOfflineEvent from "./pages/organizer/dashboard/event/CreateOfflineEvent.tsx";
+import AdminEventManagement from "./pages/admin/AdminEventManagement.tsx";
+import UserProfileLayout from "./layouts/UserProfileLayout.tsx";
+import EventsPanel from "./components/user/EventsPanel.tsx";
+import AboutPanel from "./components/user/AboutPanel.tsx";
+import SettingsPanel from "./components/user/SettingsPanel.tsx";
+import OrdersPanel from "./components/user/OrdersPanel.tsx";
+import ForgotPassword from "./pages/user/ForgotPassword.tsx";
+import BlockUserComponent from "./components/global/BlockUserComponent.tsx";
+// import BlockUser from "./components/global/BlockUser.tsx";
 
 interface AnonymousRouteProps {
   children: JSX.Element;
@@ -59,23 +71,11 @@ const VerificationRoute: React.FC<VerificationRouteProps> = ({ children }) => {
   return children;
 };
 
-interface ProtectedRouteProps {
-  children: JSX.Element;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isLogged } = useSelector((state: RootState) => state.user as IUserState);
-
-  if (!isLogged) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
 
 const App: React.FC = () => {
   return (
     <>
+     <BlockUserComponent />
       <Routes>
       
         <Route
@@ -83,6 +83,14 @@ const App: React.FC = () => {
           element={
             <AnonymousRoute>
               <Login />
+            </AnonymousRoute>
+          }
+        />
+          <Route
+          path="/forgot-password"
+          element={
+            <AnonymousRoute>
+              <ForgotPassword />
             </AnonymousRoute>
           }
         />
@@ -108,13 +116,18 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<ExploreEvents />} />
           <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+          path="/profile/*"
+          element={
+            <UserProfileLayout>
+              <Routes>
+                <Route path="/" element={<EventsPanel />} />
+                <Route path="about" element={<AboutPanel />} />
+                <Route path="settings" element={<SettingsPanel />} />
+                <Route path="orders" element={<OrdersPanel />} />
+              </Routes>
+            </UserProfileLayout>
+          }
+        />
           
           {/* Organizer Route without ProtectedRoute */}
           <Route path="/become-an-organizer" element={<OrganizerLandingPage />} />
@@ -133,7 +146,16 @@ const App: React.FC = () => {
   <Route path="" element={<Navigate to="dashboard" replace />} />
   <Route element={<OrganizerProtectedRoute />}>
     <Route path="dashboard" element={<OrganizerDashboard />} />
+
+    // event management
     <Route path="event-management" element={<OrganizerEventManagement />} />
+    <Route path="create-online-event" element={
+      <CreateOnlineEvent />
+      } />
+    <Route path="create-offline-event" element={<CreateOfflineEvent />} />
+
+
+
     <Route path="blog-management" element={<OrganizerBlogManagement />} />
     <Route path="reports-and-graph" element={<OrganizerReportsAndGraphManagement />} />
     <Route path="user-reports" element={<OrganizerUserReportManagement />} />
@@ -142,6 +164,7 @@ const App: React.FC = () => {
   </Route>
   <Route path="profile" element={<OrganizerProfile />} />
 </Route>
+
 
     <Route path="/admin" element={<AdminLayout />}>
     <Route path="" element={<Navigate to="dashboard" replace />} />
@@ -159,7 +182,37 @@ const App: React.FC = () => {
           </AdminProtectedRoute>
         }
       />
+
+      // Organizer Management
+      <Route path="organizer-management"
+        element={
+          <AdminProtectedRoute>
+            <AdminOrganizerManagement />
+          </AdminProtectedRoute>
+        }
+      />
+
+      <Route path="/admin/organizerDetails/:organizerId"
+        element={
+          <AdminProtectedRoute>
+            <AdminOrganizerDetailsPage />
+          </AdminProtectedRoute>
+        }
+      />
+
+      // Event Management
+      <Route path="event-management"
+      element={
+        <AdminProtectedRoute>
+          <AdminEventManagement />
+        </AdminProtectedRoute>
+      }
+    />
+
     </Route>
+    
+
+    <Route path="/verifyOrganizer/:token" element={<VerifyOrganizer />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

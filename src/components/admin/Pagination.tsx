@@ -10,11 +10,11 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
-    <div className="join">
+    <div className="flex space-x-2">
       {pages.map((page) => (
         <button
           key={page}
-          className={`join-item btn ${page === currentPage ? 'btn-active' : ''}`}
+          className={`px-4 py-2 border border-gray-400 ${page === currentPage ? 'bg-blue-200 shadow' : 'bg-blue-100'} transition duration-200`}
           onClick={() => onPageChange(page)}
         >
           {page}

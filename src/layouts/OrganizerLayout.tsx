@@ -116,16 +116,8 @@ const OrganizerLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-100 text-sm">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} onLogout={handleLogout} />
-      <div className="flex-grow overflow-hidden">
-        <Navbar title={currentTitle} />
-        <div className="p-5 overflow-auto h-[calc(100vh-52px)]">
-          {currentTitle === 'Profile' ? <Outlet /> : <OrganizerProtectedRoute />} 
-        </div>
-      </div>
-
-      {isModalOpen && (
+    <>
+    {isModalOpen && (
         <>
           <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={cancelLogout}></div>
           <dialog open className="modal modal-open z-50">
@@ -140,7 +132,16 @@ const OrganizerLayout: React.FC = () => {
           </dialog>
         </>
       )}
+    <div className="flex h-screen bg-slate-100 text-sm">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} onLogout={handleLogout} />
+      <div className="flex-grow overflow-hidden">
+        <Navbar title={currentTitle} />
+        <div className="p-5 overflow-auto h-[calc(100vh-52px)]">
+          {currentTitle === 'Profile' ? <Outlet /> : <OrganizerProtectedRoute />} 
+        </div>
+      </div>
     </div>
+    </>
   );
 };
 

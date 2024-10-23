@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ILoginRequest, IloginUserResponse, IOtpRequest, IOtpResponse, IRegisterRequest, IRegisterResponse, IResendOTPRequest, IUser, resendOTPResponse, userDataRequest } from "../../interfaces/user";
+import { IForgotPasswordRequest, IForgotPasswordResetRequest, ILoginRequest, IloginUserResponse, IOtpRequest, IOtpResponse, IPasswordChangeRequest, IRegisterRequest, IRegisterResponse, IResendOTPRequest, IUser, IUserProfileUpdateRequest, resendOTPResponse, userDataRequest } from "../../interfaces/user";
 import axiosInstance from "../../axios/axiosInstance";
 import { userEndPoints } from "../../services/endpoints/endPoints";
 import { AxiosError } from "axios";
@@ -39,7 +39,7 @@ export const loginUser = createAsyncThunk<IloginUserResponse, ILoginRequest>(
     async (loginData : ILoginRequest, {rejectWithValue}) => {
         try {
             const response = await axiosInstance.post(userEndPoints.login, loginData);
-            return response.data;
+            return response.data.data;
         } catch (error) {
             if (error instanceof AxiosError) {
                 
@@ -98,3 +98,65 @@ export const logoutUser = createAsyncThunk<void, void>(
         }
     }
 );
+
+
+export const passwordReset = createAsyncThunk<void, IPasswordChangeRequest>(
+    'user/passwordChangeRequest',
+    async (IPasswordChangeRequest, { rejectWithValue }) => {
+        try {
+            await axiosInstance.put(userEndPoints.passwordReset, IPasswordChangeRequest); 
+            return; 
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                return rejectWithValue(error.response?.data || 'Password change request failed. Try again.');
+            }
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+);
+
+export const changeAboutInformation = createAsyncThunk<IUserProfileUpdateRequest, IUserProfileUpdateRequest>(
+    'user/userProfileUpdate',
+    async (IUserProfileUpdateRequest, { rejectWithValue }) => {
+        try {
+            await axiosInstance.put(userEndPoints.changeProfileInfo, IUserProfileUpdateRequest); 
+            return IUserProfileUpdateRequest; 
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                return rejectWithValue(error.response?.data || 'About section change request failed. Try again.');
+            }
+            return rejectWithValue('An unknown error occurred');
+        }
+    }
+);
+
+
+export const forgotPasswordRequest = createAsyncThunk<void, IForgotPasswordRequest>(
+    'user/forgotPasswordRequest',
+    async (IForgotPasswordRequest, { rejectWithValue }) => {
+      try {
+        await axiosInstance.post(userEndPoints.forgotPassword, IForgotPasswordRequest);
+        return;
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          return rejectWithValue(error.response?.data || 'Forgot password request failed. Try again.');
+        }
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  );
+
+  export const forgotPasswordReset = createAsyncThunk<void, IForgotPasswordResetRequest>(
+    'user/forgotPasswordReset',
+    async (data, { rejectWithValue }) => {
+      try {
+        await axiosInstance.post(userEndPoints.forgotPasswordReset, data);
+        return;
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          return rejectWithValue(error.response?.data || 'Forgot password reset request failed. Try again.');
+        }
+        return rejectWithValue('An unknown error occurred');
+      }
+    }
+  );

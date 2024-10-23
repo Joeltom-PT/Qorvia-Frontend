@@ -109,9 +109,9 @@ const Login: React.FC = () => {
                   </>
                 )}
               />
-              <a href="#" className="text-xs text-blue-300 hover:underline mt-1 inline-block">
+              <Link to="/forgot-password" className="text-xs text-blue-300 hover:underline mt-1 inline-block">
                 Forgot Password?
-              </a>
+              </Link>
             </div>
             
             <button

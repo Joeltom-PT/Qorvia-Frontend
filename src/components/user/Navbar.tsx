@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TfiMenu } from 'react-icons/tfi';
 import Button from './Button';
 import Sidebar from './Sidebar';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { IUserState } from '../../interfaces/user';
 
@@ -14,7 +14,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
-  const isLogged = useSelector((state: { user: IUserState }) => state.user.isLogged);
+  const user = useSelector((state: { user: IUserState }) => state.user);
 
   const handleSidebarOpen = () => {
     setSidebarOpen(true);
@@ -25,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   };
 
   const handleProfile = () => {
-    if (isLogged) {
+    if (user.isLogged) {
       navigate('/profile');
     } else {
       navigate('/login');
@@ -48,8 +48,8 @@ const Navbar: React.FC<NavbarProps> = () => {
         />
         <div className="flex items-center space-x-4">
           <button onClick={handleProfile} className='w-[45px] h-[45px] rounded-full border-2 border-blue-900'>
-            {isLogged ? 
-              <img src="user/profile/default_profile_img_low.png" alt="User Profile" className='rounded-full'/> :
+            {user.isLogged ? 
+              <img src={user.user?.pro_img ? user.user.pro_img : "user/profile/default_profile_img_low.png" } alt="User Profile" className='rounded-full'/> :
               <img src="user/profile/default_profile_img_low.png" alt="Default Profile" className='transform mx-auto rounded-full'/>
             } 
           </button>

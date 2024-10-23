@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { IOrganizerState } from "../../interfaces/organizer";
-import { logoutOrganizer, organizerLogin, OrganizerRegister } from "../action/organizerActions";
-
+import { emailVerification, logoutOrganizer, organizerLogin, OrganizerRegister, verifyOrganizer } from "../action/organizerActions";
 
 const initialState: IOrganizerState = {
     loading: false,
@@ -49,6 +48,27 @@ export const organizerSlice = createSlice({
                 state.loading  = false;
             })
             .addCase(logoutOrganizer.rejected, (state : IOrganizerState) => {
+                state.loading = false;
+            })
+            // Email Verification 
+            .addCase(emailVerification.pending, (state : IOrganizerState) => {
+                state.loading = true;
+            })
+            .addCase(emailVerification.fulfilled, (state : IOrganizerState) => {
+                state.loading = false;
+            })
+            .addCase(emailVerification.rejected, (state : IOrganizerState)=> {
+                state.loading = false;
+            })
+            // Verify Email via Token 
+            .addCase(verifyOrganizer.pending, (state : IOrganizerState)=> {
+                state.loading = true;
+            })
+            .addCase(verifyOrganizer.fulfilled, (state : IOrganizerState) => {
+                state.loading = false;
+                state.profile = null;
+            })
+            .addCase(verifyOrganizer.rejected, (state : IOrganizerState) => {
                 state.loading = false;
             })
     },
